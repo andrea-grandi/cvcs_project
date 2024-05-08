@@ -20,7 +20,7 @@ TO-DO:
 3. Player Tracking
 4. Ball Detection 
 5. Ball Tracking
-6. Geometrical Trasformation of Play Field
+6. Geometrical Trasformation of Playground
 7. CNN Component Design
 8. Image Processing Operator (like SOBEL)
 9. Retrieval Algorithm or Component
