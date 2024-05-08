@@ -1,5 +1,8 @@
 import cv2
-import numpy as np
+import numpy as np 
+
+CROP_WIDTH, CROP_HEIGHT = 500,500
+
 
 class GeometricalTransformations:
   def __init__(self, src_points, dst_points):
@@ -11,4 +14,6 @@ class GeometricalTransformations:
     height, width = image.shape[:2]
     transformed_image = cv2.warpPerspective(image, self.homography_matrix, (width, height))
     return transformed_image
-  
+ 
+  def crop_image(self, image):
+      return image[0:CROP_WIDTH, 0:CROP_HEIGHT]

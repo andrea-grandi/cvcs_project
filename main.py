@@ -15,12 +15,12 @@ from player_detector import PlayerDetector
 
 """
 TO-DO: 
-1. Court Line Detector (Keypoints) - DONE
+1. Court Line Detector (Keypoints)
 2. Player Detection
 3. Player Tracking
 4. Ball Detection 
 5. Ball Tracking
-6. Geometrical Trasformation of Play Field - DONE
+6. Geometrical Trasformation of Play Field
 7. CNN Component Design
 8. Image Processing Operator (like SOBEL)
 9. Retrieval Algorithm or Component
@@ -28,6 +28,12 @@ TO-DO:
 11. Generating Natural Language Description
 """
 
+"""
+Width and Height for Transformed Image:
+
+500x500 is the dimension for the
+geometrical transformed image
+"""
 WIDTH, HEIGHT = 500,500
 
 
@@ -37,13 +43,9 @@ def main():
     yolo_model_path = "models/yolov8x.pt"
     court_model_path = "models/model_tennis_court_det.pt"
 
-    # --- Random Choice of Input Image --- #
-    images_path = Path("input/input_images/")
-    image_files = list(images_path.glob("*.png"))
-
     # --- Image or Video Paths --- #
-    input_video_path = "input/input_videos/input_video6.mp4"
-    input_image_path = str(random.choice(image_files))
+    input_video_path = f"input/input_videos/input_video{random.randint(1,6)}.mp4"
+    input_image_path = f"input/input_images/input_image{random.randint(1,5)}.png"
     output_image_path = "output/output_images/output_image.png"
     output_transformed_image_path = "output/output_images/transformed_image.png"
     output_detector_path = "output/output_images/detector_image.png"
