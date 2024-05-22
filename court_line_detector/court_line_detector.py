@@ -39,12 +39,16 @@ class CourtLineDetector:
         
         keypoints = torch.tensor([points])
         keypoints = torch.squeeze(keypoints)
-        #print(keypoints.shape)
 
         for j in range(len(points)):
             if points[j][0] is not None:
                 image = cv2.circle(image, (int(points[j][0]), int(points[j][1])),
                                    radius=0, color=(0, 0, 255), thickness=10)
+
+        # Draw keypoint in center of playground 
+        court_center_x = np.mean([keypoints[i][0] for i in range(4)])
+        court_center_y = np.mean([keypoints[i][1] for i in range(4)])
+        image = cv2.circle(image, (int(court_center_x), int(court_center_y)), radius=0, color=(0, 0, 255), thickness=10)
 
         return image, keypoints
     
