@@ -39,7 +39,6 @@ class PlayerDetector:
         return player_detections
 
     def choose_and_filter_players(self, court_keypoints, player_detections):
-
         # Calculate the center of the court
         court_center_x = np.mean([court_keypoints[i][0] for i in range(4)])
         court_center_y = np.mean([court_keypoints[i][1] for i in range(4)])

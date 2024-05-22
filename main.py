@@ -46,8 +46,8 @@ def main():
 
     # --- Image or Video Paths --- #
     input_video_path = f"input/input_videos/input_video{random.randint(1,6)}.mp4"
-    #input_image_path = f"input/input_images/input_image{random.randint(1,23)}.png"
-    input_image_path = "input/input_images/input_image1.png"
+    input_image_path = f"input/input_images/input_image{random.randint(1,23)}.png"
+    #input_image_path = "input/input_images/input_image1.png"
     output_keypoints_image_path = "output/output_images/output_keypoints_image.png"
     output_transformed_image_path = "output/output_images/output_transformed_image.png"
     output_player_detection_image_path = "output/output_images/output_player_detection_image.png"
