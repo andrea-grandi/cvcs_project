@@ -7,4 +7,8 @@
 
 </div>
 
+## Credits
 
+- Andrea Grandi: [@andrea-grandi](https://github.com/andrea-grandi)
+- David Wuttke: [@DInoWDave](https://github.com/DInoWDave)
+- Daniele Vellani: [@franzione1](https://github.com/franzione1)
