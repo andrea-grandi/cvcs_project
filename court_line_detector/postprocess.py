@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from scipy.spatial import distance
-from .utils import line_intersection
+from court_line_detector.utils import line_intersection
 
 
 def postprocess(heatmap, scale=2, low_thresh=155, min_radius=10, max_radius=30):

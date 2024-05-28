@@ -1,12 +1,8 @@
 import cv2
+import torch
 from ultralytics import YOLO 
 import numpy as np
-from utils import measure_distance, get_center_of_bbox
-import matplotlib.pyplot as plt
-
-"""
-At this moment we fine tuned YOLO for pearson 
-"""
+from utils import measure_distance, get_center_of_bbox, draw_bounding_boxes
 
 
 class PlayerDetector:
@@ -18,7 +14,6 @@ class PlayerDetector:
         results = self.model(image)
 
         player_detections = []
-
         for result in results:
             boxes = result.boxes
             for box in boxes:
@@ -39,6 +34,7 @@ class PlayerDetector:
         return player_detections
 
     def choose_and_filter_players(self, court_keypoints, player_detections):
+
         # Calculate the center of the court
         court_center_x = np.mean([court_keypoints[i][0] for i in range(4)])
         court_center_y = np.mean([court_keypoints[i][1] for i in range(4)])
@@ -55,21 +51,14 @@ class PlayerDetector:
         player_distances.sort(key=lambda x: x[0])
 
         # Select the two closest players
-        filtered_player_detections = [player_distances[i][1] for i in range(min(2, len(player_distances)))]
+        filtered_player_detections = [player_distances[i][1] for i in range(min(4, len(player_distances)))]
 
-        return filtered_player_detections
-    
-    def draw_bounding_boxes(self, image_path, filtered_player_detections):
-        detections_output_image = cv2.imread(image_path)
-        id = 1
-        # Draw player detections
-        for player_dict in filtered_player_detections:
-            x1, y1, x2, y2 = map(int, player_dict['bbox'])
-            track_id = player_dict.get('track_id', id)
-            id+=1
-            confidence = player_dict['confidence']
-            label = f'ID: {track_id}, Conf: {confidence:.2f}'
-            cv2.rectangle(detections_output_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(detections_output_image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        # Select the two player with higher confidence sorted by ID
+        for i in range(4):
+            if i < 3 and filtered_player_detections[i]['confidence']<filtered_player_detections[i+1]['confidence']:
+                    tmp = filtered_player_detections[i]
+                    filtered_player_detections[i] = filtered_player_detections[i+1]
+                    filtered_player_detections[i+1] = tmp
 
-        return detections_output_image
+        # Return only the first and second detections
+        return filtered_player_detections[:2]

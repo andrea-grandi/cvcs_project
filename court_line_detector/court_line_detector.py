@@ -45,10 +45,27 @@ class CourtLineDetector:
                 image = cv2.circle(image, (int(points[j][0]), int(points[j][1])),
                                    radius=0, color=(0, 0, 255), thickness=10)
 
-        # Draw keypoint in center of playground 
+        # --- Draw keypoint in center, top and bottom of playground --- #
         court_center_x = np.mean([keypoints[i][0] for i in range(4)])
         court_center_y = np.mean([keypoints[i][1] for i in range(4)])
         image = cv2.circle(image, (int(court_center_x), int(court_center_y)), radius=0, color=(0, 0, 255), thickness=10)
+
+        top_center_x = np.mean([keypoints[i][0] for i in range(2)])
+        top_center_y = np.mean([keypoints[i][1] for i in range(2)])
+        image = cv2.circle(image, (int(top_center_x), int(top_center_y)), radius=0, color=(0, 0, 255), thickness=10)
+
+        bottom_center_x = np.mean([keypoints[i][0] for i in range(2,4)])
+        bottom_center_y = np.mean([keypoints[i][1] for i in range(2,4)])
+        image = cv2.circle(image, (int(bottom_center_x), int(bottom_center_y)), radius=0, color=(0, 0, 255), thickness=10)
+
+        # --- Add new keypoints to the list --- #
+        additional_keypoints = [
+            (court_center_x, court_center_y),
+            (top_center_x, top_center_y),
+            (bottom_center_x, bottom_center_y)
+        ]
+
+        keypoints = torch.cat((keypoints, torch.tensor(additional_keypoints)), dim=0)
 
         return image, keypoints
     
