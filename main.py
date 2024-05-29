@@ -62,7 +62,7 @@ def main():
     # --- Input Image Paths --- #
     #input_video_path = f"input/input_videos/input_video{random.randint(1,6)}.mp4"
     #input_image_path = f"input/input_images/input_image{random.randint(1,24)}.png"
-    input_image_path = "input/input_images/input_image18.png"
+    input_image_path = "input/input_images/input_image5.png"
 
     # --- Output Image Paths --- #
     output_keypoints_image_path = "output/output_images/output_keypoints_image.png"
