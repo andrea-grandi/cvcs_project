@@ -18,7 +18,8 @@ class TrackingBallDetector:
         self.height = 360
 
     def infer_model(self, frames):
-        """ Run pretrained model on a consecutive list of frames
+        """ 
+        Run pretrained model on a consecutive list of frames
         :params
             frames: list of consecutive video frames
         :return

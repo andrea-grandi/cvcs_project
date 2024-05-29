@@ -114,7 +114,10 @@ def main():
     court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
 
     """
-    TODO
+    I want to do the same approach with one image,
+    i can pass only one frame
+    """
+
     # --- Tracking --- #
     frames, fps = read_video(input_video_path) 
     scenes = scene_detect(input_video_path)    
@@ -138,12 +141,10 @@ def main():
     bounces = bounce_detector.predict(x_ball, y_ball)
 
     # track
-    imgs_res = track(frames, scenes, bounces, ball_track, homography_matrices, kps_court, persons_top, persons_bottom,
-                    draw_trace=True)
+    imgs_res = track(frames, scenes, bounces, ball_track, homography_matrices, kps_court, persons_top, persons_bottom, draw_trace=True)
 
     # write video
     write_video(imgs_res, fps, output_video_path)
-    """
 
     # --- Save Images --- #
     save_image(output_player_detection_image_path, detections_output_image)

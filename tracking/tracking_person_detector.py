@@ -59,9 +59,7 @@ class TrackingPersonDetector():
         return person_bboxes_top, person_bboxes_bottom
 
     def filter_players(self, person_bboxes_top, person_bboxes_bottom, matrix):
-        """
-        Leave one person at the top and bottom of the tennis court
-        """
+        # I would get only one person at the top and bottom of the court
         refer_kps = np.array(self.court_ref.key_points[12:], dtype=np.float32).reshape((-1, 1, 2))
         trans_kps = cv2.perspectiveTransform(refer_kps, matrix)
         center_top_court = trans_kps[0][0]

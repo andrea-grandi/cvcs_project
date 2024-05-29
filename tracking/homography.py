@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from scipy.spatial import distance
 
+
 court_ref = TrackingCourtReference()
 refer_kps = np.array(court_ref.key_points, dtype=np.float32).reshape((-1, 1, 2))
 
@@ -15,9 +16,7 @@ for i in range(len(court_ref.court_conf)):
     court_conf_ind[i+1] = inds
 
 def get_trans_matrix(points):
-    """
-    Determine the best homography matrix from court points
-    """
+    # We get the best homography matrix
     matrix_trans = None
     dist_max = np.Inf
     for conf_ind in range(1, 13):
@@ -28,15 +27,16 @@ def get_trans_matrix(points):
         if None not in inters:
             matrix, _ = cv2.findHomography(np.float32(conf), np.float32(inters), method=0)
             trans_kps = cv2.perspectiveTransform(refer_kps, matrix)
+            # Add np.squeeze() because trans_kps.shape=(14,1,2)
+            # trans_kps should be (14,2)
+            trans_kps = np.squeeze(trans_kps, axis=1)
             dists = []
             for i in range(12):
                 if i not in inds and points[i] is not None:
                     dists.append(distance.euclidean(points[i], trans_kps[i]))
+
             dist_median = np.mean(dists)
             if dist_median < dist_max:
                 matrix_trans = matrix
                 dist_max = dist_median
     return matrix_trans 
-
-
-
