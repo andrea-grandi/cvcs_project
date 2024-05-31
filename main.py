@@ -27,19 +27,14 @@ TO-DO:
 4. Ball Detection - Train yolo
 5. Ball Tracking  
 6. Geometrical Trasformation of Playground 
-7. CNN Component Design (we can design a part of a net for ball detection)
+7. CNN Component Design (we can design a part of a net for ball/player detection)
 8. Image Processing Operator
 9. Retrieval Algorithm or Component (match and player recognition)
 10. Spatial Relationship Between Objects - Court Visualization
 11. Generating Natural Language Description
 """
 
-"""
-Width and Height for Transformed Image:
-500x500 is the dimension for the
-geometrical transformed image
-"""
-
+# Width and Height for Transformed Image
 WIDTH, HEIGHT = 500,500
 
 
