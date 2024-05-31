@@ -2,7 +2,7 @@ import cv2
 import torch
 from ultralytics import YOLO 
 import numpy as np
-from utils import measure_distance, get_center_of_bbox, draw_bounding_boxes
+from utils import measure_distance, get_center_of_bbox
 
 
 class PlayerDetector:

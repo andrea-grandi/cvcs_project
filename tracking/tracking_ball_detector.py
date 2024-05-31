@@ -1,4 +1,4 @@
-from tracking.tracknet import BallTrackerNet
+from tracknet import TrackerNet
 import torch
 import cv2
 import numpy as np
@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 class TrackingBallDetector:
     def __init__(self, path_model=None, device='cuda'):
-        self.model = BallTrackerNet(input_channels=9, out_channels=256)
+        self.model = TrackerNet(input_channels=9, out_channels=256)
         self.device = device
         if path_model:
             self.model.load_state_dict(torch.load(path_model, map_location=device))

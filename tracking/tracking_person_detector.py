@@ -1,8 +1,7 @@
 import torchvision
 import cv2
 import torch
-from tracking.tracking_court_reference import TrackingCourtReference
-from scipy import signal
+from court_reference import CourtReference
 import numpy as np
 from scipy.spatial import distance
 from tqdm import tqdm
@@ -14,7 +13,7 @@ class TrackingPersonDetector():
         self.detection_model = self.detection_model.to(dtype)
         self.detection_model.eval()
         self.dtype = dtype
-        self.court_ref = TrackingCourtReference()
+        self.court_ref = CourtReference()
         self.ref_top_court = self.court_ref.get_court_mask(2)
         self.ref_bottom_court = self.court_ref.get_court_mask(1)
         self.point_person_top = None

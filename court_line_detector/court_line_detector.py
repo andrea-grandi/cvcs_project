@@ -1,17 +1,16 @@
 import torch
 import cv2
 import numpy as np 
-from court_line_detector.tracknet import BallTrackerNet
-from court_line_detector.postprocess import postprocess, refine_kps
+from tracknet import TrackerNet
 import torch.nn.functional as F
-from utils import save_image
+from postprocess import postprocess, refine_kps
 
 OUTPUT_WIDTH = 640
 OUTPUT_HEIGHT = 360
 
 class CourtLineDetector:
     def __init__(self, model_path):
-        self.model = BallTrackerNet(out_channels=15)
+        self.model = TrackerNet(out_channels=15)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model = self.model.to(self.device)
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))
@@ -83,4 +82,3 @@ class CourtLineDetector:
         court_corners = np.array([top_left, top_right, bottom_left, bottom_right], dtype=np.float32)
         
         return court_corners
-    

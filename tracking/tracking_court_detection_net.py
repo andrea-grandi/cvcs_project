@@ -1,15 +1,15 @@
 import cv2
 import numpy as np
 import torch
-from tracking.tracknet import BallTrackerNet
+from tracknet import TrackerNet
 import torch.nn.functional as F
 from tqdm import tqdm
-from tracking.postprocess import refine_kps
-from tracking.homography import get_trans_matrix, refer_kps
+from postprocess import refine_kps
+from homography import get_trans_matrix, refer_kps
 
 class TrackingCourtDetectorNet():
     def __init__(self, path_model=None,  device='cuda'):
-        self.model = BallTrackerNet(out_channels=15)
+        self.model = TrackerNet(out_channels=15)
         self.device = device
         if path_model:
             self.model.load_state_dict(torch.load(path_model, map_location=device))

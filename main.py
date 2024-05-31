@@ -1,9 +1,7 @@
 import cv2
-import pandas as pd
 import numpy as np
 import torch
-from court_line_detector.tracknet import BallTrackerNet
-from copy import deepcopy
+from tracknet import TrackerNet
 from court_line_detector import CourtLineDetector
 from geometrical_transformations import GeometricalTransformations
 from utils import (read_video, 
@@ -15,13 +13,11 @@ from utils import (read_video,
                    draw_bounding_boxes
                    )
 import matplotlib.pyplot as plt
-import random
-from pathlib import Path
 from player_detector import PlayerDetector
 from ball_detector import BallDetector
 from court_visualizer import CourtVisualizer
-from tracking import TrackingBallDetector, TrackingCourtDetectorNet, TrackingPersonDetector, TrackingCourtReference, TrackingBounceDetector, track
-
+from court_reference import CourtReference
+from tracking import TrackingBallDetector, TrackingCourtDetectorNet, TrackingPersonDetector, TrackingBounceDetector, tracking
 
 """
 TO-DO: 
@@ -64,18 +60,19 @@ def main():
     #input_image_path = f"input/input_images/input_image{random.randint(1,24)}.png"
     input_image_path = "input/input_images/input_image5.png"
 
+    # --- Input Video Paths --- #
+    input_video_path = "input/input_videos/input_video6.mp4"
+
     # --- Output Image Paths --- #
     output_keypoints_image_path = "output/output_images/output_keypoints_image.png"
     output_transformed_image_path = "output/output_images/output_transformed_image.png"
-    output_player_detection_image_path = "output/output_images/output_player_detection_image.png"
+    output_detection_image_path = "output/output_images/output_detection_image.png"
     output_court_visualizer_image_path = "output/output_images/output_court_visualizer_image.png"
-
-    # --- Input Video Paths --- #
-    input_video_path = "input/input_videos/input_video6.mp4"
 
     # --- Output Video Paths --- #
     output_video_path = "output/output_videos/output_video.mp4"
 
+    # --- Info --- #
     print("Input Image Path: " + input_image_path)
     print("Input Video Path: " + input_video_path)
     print("Device: " + device)
@@ -111,17 +108,12 @@ def main():
                                                                                                             court_keypoints)
     court_visualizer_image = court_visualizer.draw_mini_court(detections_output_image)
     court_visualizer_image = court_visualizer.draw_points_players_on_mini_court(court_visualizer_image, player_court_visualizer_detections)
-    court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
-
-    """
-    I want to do the same approach with one image,
-    i can pass only one frame
-    """
+    #court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
 
     # --- Tracking --- #
     frames, fps = read_video(input_video_path) 
-    scenes = scene_detect(input_video_path)    
-
+    scenes = scene_detect(input_video_path)
+    
     print('ball detection')
     ball_detector = TrackingBallDetector(ball_track_model_path, device)
     ball_track = ball_detector.infer_model(frames)
@@ -141,13 +133,13 @@ def main():
     bounces = bounce_detector.predict(x_ball, y_ball)
 
     # track
-    imgs_res = track(frames, scenes, bounces, ball_track, homography_matrices, kps_court, persons_top, persons_bottom, draw_trace=True)
+    imgs_res = tracking(frames, scenes, bounces, ball_track, homography_matrices, kps_court, persons_top, persons_bottom, draw_trace=True)
 
-    # write video
+    # --- Save Video --- #
     write_video(imgs_res, fps, output_video_path)
 
     # --- Save Images --- #
-    save_image(output_player_detection_image_path, detections_output_image)
+    save_image(output_detection_image_path, detections_output_image)
     save_image(output_transformed_image_path, cropped_transformed_image)
     save_image(output_keypoints_image_path, court_keypoints_img)
     save_image(output_court_visualizer_image_path, court_visualizer_image)

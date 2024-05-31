@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-import sys
-sys.path.append('../')
 import constants
 from utils import (
     convert_meters_to_pixel_distance,
