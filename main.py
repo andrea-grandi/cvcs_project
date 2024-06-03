@@ -22,12 +22,12 @@ from tracking import TrackingBallDetector, TrackingCourtDetectorNet, TrackingPer
 """
 TO-DO: 
 1. Court Line Detector (Keypoints)
-2. Player Detection - Train yolo 
+2. Player Detection
 3. Player Tracking 
-4. Ball Detection - Train yolo
+4. Ball Detection
 5. Ball Tracking  
 6. Geometrical Trasformation of Playground 
-7. CNN Component Design (we can design a part of a net for ball detection)
+7. CNN Component Design
 8. Image Processing Operator
 9. Retrieval Algorithm or Component (match and player recognition)
 10. Spatial Relationship Between Objects - Court Visualization
