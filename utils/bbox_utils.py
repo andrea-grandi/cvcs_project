@@ -35,26 +35,23 @@ def measure_xy_distance(p1,p2):
 
 def draw_bounding_boxes(image_path, player_detections, ball_detections):
     detections_output_image = cv2.imread(image_path)
-    id = 1
+    player_id = 1
+    ball_id = 1
     for player_dict in player_detections:
         x1, y1, x2, y2 = map(int, player_dict['bbox'])
-        track_id = player_dict.get('track_id', id)
-        id+=1
+        track_id = player_dict.get('track_id', player_id)
+        player_id+=1
         confidence = player_dict['confidence']
         label = f'ID: {track_id}, Conf: {confidence:.2f}'
         cv2.rectangle(detections_output_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.putText(detections_output_image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
     for ball_dict in ball_detections:
         x1, y1, x2, y2 = map(int, ball_dict['bbox'])
-        track_id = ball_dict.get('track_id', 'N/A')
+        track_id = ball_dict.get('track_id', ball_id)
         confidence = ball_dict['confidence']
         label = f'ID: {track_id}, Conf: {confidence:.2f}'
         cv2.rectangle(detections_output_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.putText(detections_output_image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
     return detections_output_image
-
-"""
-def get_center_of_bbox(bbox):
-    return (int((bbox[0]+bbox[2])/2),int((bbox[1]+bbox[3])/2))
-"""

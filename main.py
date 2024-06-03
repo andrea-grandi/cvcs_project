@@ -27,33 +27,36 @@ TO-DO:
 4. Ball Detection - Train yolo
 5. Ball Tracking  
 6. Geometrical Trasformation of Playground 
-7. CNN Component Design (we can design a part of a net for ball/player detection)
+7. CNN Component Design (we can design a part of a net for ball detection)
 8. Image Processing Operator
 9. Retrieval Algorithm or Component (match and player recognition)
 10. Spatial Relationship Between Objects - Court Visualization
 11. Generating Natural Language Description
 """
 
-# Width and Height for Transformed Image
+"""
+Width and Height for Transformed Image:
+500x500 is the dimension for the
+geometrical transformed image
+"""
+
 WIDTH, HEIGHT = 500,500
 
 
 def main():
 
     # --- Models Paths --- #
-    yolo_player_model_path = "models/yolov8x.pt"
-    yolo_ball_model_path = "models/yolo5_last.pt"
-    court_model_path = "models/model_tennis_court_det.pt"
-    ball_track_model_path = "models/ball_model.pt"
-    bounce_model_path = "models/bounce_model.cbm"
+    yolo_player_model_path = "models/yolo_player_model.pt"
+    yolo_ball_model_path = "models/yolo_ball_model.pt"
+    court_model_path = "models/court_model.pt"
+    ball_track_model_path = "models/ball_tracking_model.pt"
+    bounce_tracking_model_path = "models/bounce_tracking_model.cbm"
 
     # --- Device --- #
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # --- Input Image Paths --- #
-    #input_video_path = f"input/input_videos/input_video{random.randint(1,6)}.mp4"
-    #input_image_path = f"input/input_images/input_image{random.randint(1,24)}.png"
-    input_image_path = "input/input_images/input_image5.png"
+    input_image_path = "input/input_images/input_image1.png"
 
     # --- Input Video Paths --- #
     input_video_path = "input/input_videos/input_video6.mp4"
@@ -86,19 +89,23 @@ def main():
     # --- Players Detection --- #
     player_detector = PlayerDetector(yolo_player_model_path)
     player_detections = player_detector.detect(input_image_path)
-    filtered_player_detections = player_detector.choose_and_filter_players(court_keypoints, player_detections)
+
+    # Not needed anymore (couse i have trained YOLOv8 for player detection)
+    # Dataset: https://universe.roboflow.com/deep-hbapi/tennis-yfcgx/dataset/1#
+    # For reference .ipynb go to training/yolov8_training.ipynb
+    # filtered_player_detections = player_detector.choose_and_filter_players(court_keypoints, player_detections)
 
     # --- Ball Detection --- #
     ball_detector = BallDetector(yolo_ball_model_path)
     ball_detection = ball_detector.detect(input_image_path)
 
     # --- Draw Bounding Boxes --- #
-    detections_output_image = draw_bounding_boxes(input_image_path, filtered_player_detections, ball_detection)
+    detections_output_image = draw_bounding_boxes(input_image_path, player_detections, ball_detection)
 
     # --- Court Visualization and Spatial Relationships --- #
     court_visualizer = CourtVisualizer(read_image(input_image_path))
     player_court_visualizer_detections, ball_court_visualizer_detections = court_visualizer.convert_bounding_boxes_to_mini_court_coordinates(
-                                                                                                            filtered_player_detections, 
+                                                                                                            player_detections, 
                                                                                                             ball_detection,
                                                                                                             court_keypoints)
     court_visualizer_image = court_visualizer.draw_mini_court(detections_output_image)
@@ -122,7 +129,7 @@ def main():
     persons_top, persons_bottom = person_detector.track_players(frames, homography_matrices, filter_players=False)
 
     # bounce detection
-    bounce_detector = TrackingBounceDetector(bounce_model_path)
+    bounce_detector = TrackingBounceDetector(bounce_tracking_model_path)
     x_ball = [x[0] for x in ball_track]
     y_ball = [x[1] for x in ball_track]
     bounces = bounce_detector.predict(x_ball, y_ball)

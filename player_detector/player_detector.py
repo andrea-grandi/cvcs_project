@@ -12,7 +12,8 @@ class PlayerDetector:
     def detect(self, image_path):
         image = cv2.imread(image_path)
         results = self.model(image)
-
+        player_id = 1
+        
         player_detections = []
         for result in results:
             boxes = result.boxes
@@ -27,12 +28,15 @@ class PlayerDetector:
                 if hasattr(box, 'id') and box.id is not None:
                     detection['track_id'] = box.id.item()
                 
-                # Class ID for Player (for YOLOv8 is the first one in results)
-                if class_id == 0:
-                    player_detections.append(detection)
+                if player_id <= 2:
+                    # Class ID for Player
+                    if class_id == 1:
+                        player_detections.append(detection)
+                        player_id+=1
 
         return player_detections
-
+    
+    # Not needed anymore
     def choose_and_filter_players(self, court_keypoints, player_detections):
 
         # Calculate the center of the court
