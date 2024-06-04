@@ -32,6 +32,25 @@ TO-DO:
 9. Retrieval Algorithm or Component (match and player recognition)
 10. Spatial Relationship Between Objects - Court Visualization
 11. Generating Natural Language Description
+
+Some ideas for NLD:
+a. Player positions: 
+    Example: "Player A is positioned near the baseline on the left side of the court, preparing to serve. 
+    Player B stands at the center of the opposite baseline, ready to receive the serve."
+
+b. Relative positions:
+    Example: "Player A is approximately 1 meter from the left sideline and 2 meters behind the baseline, 
+    while Player B is positioned directly opposite, about 1 meter from the right sideline."
+
+c. Contextual details:
+    Example: "The match appears to be intense, with both players focused on their respective positions. 
+    The audience in the background is watching attentively."
+
+and also integrate some quantitative description of the objects:
+for example, players positions (X, Y coordinates on the court) or 
+distance from specific lines (baseline, sideline)
+    Example: "Player A: (X: 3.5m, Y: 0.5m from the left sideline), 
+    Player B: (X: 11m, Y: 0.5m from the right sideline)"
 """
 
 """
