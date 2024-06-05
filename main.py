@@ -96,7 +96,7 @@ def main():
 
     # --- Court Line Detector --- #
     court_line_detector = CourtLineDetector(court_model_path)
-    court_keypoints_img, court_keypoints = court_line_detector.predict(input_image_path, output_keypoints_image_path, use_refine_kps=True)
+    court_keypoints_img, court_keypoints = court_line_detector.predict(input_image_path, output_keypoints_image_path, use_refine_kps=False)
 
     # --- Apply Geometry Trasformations --- #
     src_points = court_line_detector.get_court_corners(court_keypoints)
@@ -107,7 +107,7 @@ def main():
 
     # --- Players Detection --- #
     player_detector = PlayerDetector(yolo_player_model_path)
-    player_detections = player_detector.detect(input_image_path)
+    player_detections = player_detector.detect(input_image_path, img=None)
 
     # Not needed anymore (couse i have trained YOLOv8 for player detection)
     # Dataset: https://universe.roboflow.com/deep-hbapi/tennis-yfcgx/dataset/1#
@@ -116,10 +116,10 @@ def main():
 
     # --- Ball Detection --- #
     ball_detector = BallDetector(yolo_ball_model_path)
-    ball_detection = ball_detector.detect(input_image_path)
+    ball_detection = ball_detector.detect(input_image_path, img=None)
 
     # --- Draw Bounding Boxes --- #
-    detections_output_image = draw_bounding_boxes(input_image_path, player_detections, ball_detection)
+    detections_output_image = draw_bounding_boxes(input_image_path, None, player_detections, ball_detection)
 
     # --- Court Visualization and Spatial Relationships --- #
     court_visualizer = CourtVisualizer(read_image(input_image_path))

@@ -9,8 +9,11 @@ class BallDetector:
     def __init__(self,model_path):
         self.model = YOLO(model_path)
 
-    def detect(self, image_path):
-        image = cv2.imread(image_path)
+    def detect(self, image_path, img):
+        if image_path is not None:
+            image = cv2.imread(image_path)
+        else:
+            image = img
         results = self.model(image)
 
         ball_detections = []
