@@ -131,6 +131,10 @@ def main():
     court_visualizer_image = court_visualizer.draw_points_players_on_mini_court(court_visualizer_image, player_court_visualizer_detections)
     #court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
 
+    """
+    Comment here if you do not have a GPU
+    For Tracking part is needed (with cpu is slow)
+    """
     # --- Tracking --- #
     frames, fps = read_video(input_video_path) 
     scenes = scene_detect(input_video_path)
