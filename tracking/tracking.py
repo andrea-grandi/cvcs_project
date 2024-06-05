@@ -54,16 +54,16 @@ def tracking(frames, scenes, bounces, ball_track, homography_matrices, kps_court
                                     draw_x = int(ball_track[i-j][0])
                                     draw_y = int(ball_track[i-j][1])
                                     img_res = cv2.circle(frames[i], (draw_x, draw_y),
-                                    radius=3, color=(0, 255, 0), thickness=2)
+                                    radius=3, color=(255, 0, 0), thickness=2)
                     else:    
                         img_res = cv2.circle(img_res , (int(ball_track[i][0]), int(ball_track[i][1])), radius=5,
-                                             color=(0, 255, 0), thickness=2)
+                                             color=(255, 0, 0), thickness=2)
                         img_res = cv2.putText(img_res, 'ball', 
                               org=(int(ball_track[i][0]) + 8, int(ball_track[i][1]) + 8),
                               fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                               fontScale=0.8,
                               thickness=2,
-                              color=(0, 255, 0))
+                              color=(255, 0, 0))
 
                 # draw court keypoints
                 if kps_court[i] is not None:
@@ -89,14 +89,14 @@ def tracking(frames, scenes, bounces, ball_track, homography_matrices, kps_court
                     if len(person[0]) > 0:
                         person_bbox = list(person[0])
                         img_res = cv2.rectangle(img_res, (int(person_bbox[0]), int(person_bbox[1])),
-                                                (int(person_bbox[2]), int(person_bbox[3])), [255, 0, 0], 2)
+                                                (int(person_bbox[2]), int(person_bbox[3])), [255, 0, 255], 2)
 
                         # transmit person point to minimap
                         person_point = list(person[1])
                         person_point = np.array(person_point, dtype=np.float32).reshape(1, 1, 2)
                         person_point = cv2.perspectiveTransform(person_point, inv_mat)
                         minimap = cv2.circle(minimap, (int(person_point[0, 0, 0]), int(person_point[0, 0, 1])),
-                                                           radius=0, color=(255, 0, 0), thickness=80)
+                                                           radius=0, color=(255, 0, 255), thickness=80)
 
                 minimap = cv2.resize(minimap, (width_minimap, height_minimap))
                 img_res[30:(30 + height_minimap), (width - 30 - width_minimap):(width - 30), :] = minimap

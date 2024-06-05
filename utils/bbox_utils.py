@@ -43,7 +43,7 @@ def draw_bounding_boxes(image_path, img, player_detections, ball_detections):
     player_id = "A"
     ball_id = 1
     color_players = (255,0,255)
-    color_ball = (0,0,255)
+    color_ball = (255,0,0)
 
     for player_dict in player_detections:
         x1, y1, x2, y2 = map(int, player_dict['bbox'])
