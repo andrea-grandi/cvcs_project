@@ -1,4 +1,4 @@
 .DS_Store
-.pt
-.pth
-.cbm
+*.pt
+*.pth
+*.cbm
