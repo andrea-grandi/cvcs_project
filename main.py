@@ -131,37 +131,34 @@ def main():
     court_visualizer_image = court_visualizer.draw_points_players_on_mini_court(court_visualizer_image, player_court_visualizer_detections)
     #court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
 
-    """
-    Comment here if you do not have a GPU
-    For Tracking part is needed (with cpu is slow)
-    """
     # --- Tracking --- #
-    frames, fps = read_video(input_video_path) 
-    scenes = scene_detect(input_video_path)
-    
-    print('ball detection')
-    ball_detector = TrackingBallDetector(ball_track_model_path, device)
-    ball_track = ball_detector.infer_model(frames)
+    if device == 'cuda':
+        frames, fps = read_video(input_video_path) 
+        scenes = scene_detect(input_video_path)
+        
+        print('ball detection')
+        ball_detector = TrackingBallDetector(ball_track_model_path, device)
+        ball_track = ball_detector.infer_model(frames)
 
-    print('court detection')
-    court_detector = TrackingCourtDetectorNet(court_model_path, device)
-    homography_matrices, kps_court = court_detector.infer_model(frames)
+        print('court detection')
+        court_detector = TrackingCourtDetectorNet(court_model_path, device)
+        homography_matrices, kps_court = court_detector.infer_model(frames)
 
-    print('person detection')
-    person_detector = TrackingPersonDetector(device)
-    persons_top, persons_bottom = person_detector.track_players(frames, homography_matrices, filter_players=False)
+        print('person detection')
+        person_detector = TrackingPersonDetector(device)
+        persons_top, persons_bottom = person_detector.track_players(frames, homography_matrices, filter_players=False)
 
-    # bounce detection
-    bounce_detector = TrackingBounceDetector(bounce_tracking_model_path)
-    x_ball = [x[0] for x in ball_track]
-    y_ball = [x[1] for x in ball_track]
-    bounces = bounce_detector.predict(x_ball, y_ball)
+        # bounce detection
+        bounce_detector = TrackingBounceDetector(bounce_tracking_model_path)
+        x_ball = [x[0] for x in ball_track]
+        y_ball = [x[1] for x in ball_track]
+        bounces = bounce_detector.predict(x_ball, y_ball)
 
-    # track
-    imgs_res = tracking(frames, scenes, bounces, ball_track, homography_matrices, kps_court, persons_top, persons_bottom, draw_trace=True)
+        # track
+        imgs_res = tracking(frames, scenes, bounces, ball_track, homography_matrices, kps_court, persons_top, persons_bottom, draw_trace=True)
 
-    # --- Save Video --- #
-    write_video(imgs_res, fps, output_video_path)
+        # --- Save Video --- #
+        write_video(imgs_res, fps, output_video_path)
 
     # --- Save Images --- #
     save_image(output_detection_image_path, detections_output_image)
