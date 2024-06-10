@@ -32,6 +32,7 @@ TO-DO:
 9. Retrieval Algorithm or Component (match and player recognition)
 10. Spatial Relationship Between Objects - Court Visualization
 11. Generating Natural Language Description
+12. Video Analysis
 
 Some ideas for NLD:
 a. Player positions: 

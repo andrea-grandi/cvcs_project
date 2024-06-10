@@ -13,8 +13,9 @@ from utils import (
 )
 import matplotlib.pyplot as plt
 
+
 class CourtVisualizer():
-    def __init__(self,image):
+    def __init__(self, image):
         self.drawing_rectangle_width = 250
         self.drawing_rectangle_height = 500
         self.buffer = 50
@@ -30,7 +31,7 @@ class CourtVisualizer():
         return convert_meters_to_pixel_distance(meters,
                                                 constants.DOUBLE_LINE_WIDTH,
                                                 self.court_drawing_width
-                                            )
+                                                )
 
     def set_court_drawing_key_points(self):
         drawing_key_points = [0]*28
