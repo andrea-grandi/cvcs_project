@@ -26,7 +26,6 @@ class CourtVisualizer():
         self.set_court_drawing_key_points()
         self.set_court_lines()
 
-
     def convert_meters_to_pixels(self, meters):
         return convert_meters_to_pixel_distance(meters,
                                                 constants.DOUBLE_LINE_WIDTH,
@@ -183,6 +182,7 @@ class CourtVisualizer():
 
         return  mini_court_player_position
 
+    # NEEDS TO BE IMPROVED
     def convert_bounding_boxes_to_mini_court_coordinates(self, player_boxes, ball_boxes, original_court_key_points):
         player_heights = {
             1: constants.PLAYER_1_HEIGHT_METERS,
@@ -192,13 +192,10 @@ class CourtVisualizer():
         output_player_boxes= []
         output_ball_boxes= []
 
-        # frame_num = player_id
         for player_id, player_bbox in enumerate(player_boxes, 1):
             output_player_bboxes_dict = {}
-            #player_id = 1
 
             foot_position = get_foot_position(player_bbox['bbox'])
-
 
             # Get The closest keypoint in pixels
             closest_key_point_index = get_closest_keypoint_index(foot_position, original_court_key_points, [0,2,12,13])
@@ -238,9 +235,9 @@ class CourtVisualizer():
 
         return output_player_boxes, output_ball_boxes
     
-    def draw_points_players_on_mini_court(self, image, players_postions, color=(0,255,0)):
-        x_1,y_1 = players_postions[1][2][0][0].numpy(), players_postions[1][2][1][1].numpy()
-        x_2,y_2 = players_postions[0][1][0][0].numpy(), players_postions[0][1][1][1].numpy()
+    def draw_points_players_on_mini_court(self, image, players_positons, color=(0,255,0)):
+        x_1,y_1 = players_positons[1][2][0][0].numpy(), players_positons[1][2][1][1].numpy()
+        x_2,y_2 = players_positons[0][1][0][0].numpy(), players_positons[0][1][1][1].numpy()
         x_1=int(x_1)
         y_1=int(y_1)
         x_2=int(x_2)
@@ -249,9 +246,9 @@ class CourtVisualizer():
         cv2.circle(image, (x_2,y_2), 5, color, -1)
         return image
     
-    def draw_points_ball_on_mini_court(self, image, ball_postions, color=(0,200,0)):
-        if len(ball_postions)!= 0:
-            x,y = ball_postions[0][1][0][0].numpy(), ball_postions[0][1][1][0].numpy()
+    def draw_points_ball_on_mini_court(self, image, ball_positons, color=(0,200,0)):
+        if len(ball_positons)!= 0:
+            x,y = ball_positons[0][1][0][0].numpy(), ball_positons[0][1][1][0].numpy()
             x=int(x)
             y=int(y)
             cv2.circle(image, (x,y), 4, color, -1)

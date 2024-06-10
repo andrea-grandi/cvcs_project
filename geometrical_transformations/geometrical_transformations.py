@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-CROP_WIDTH, CROP_HEIGHT = 500,500
+CROP_WIDTH, CROP_HEIGHT = 500,300
 
 
 class GeometricalTransformations:

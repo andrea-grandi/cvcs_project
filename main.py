@@ -55,12 +55,10 @@ distance from specific lines (baseline, sideline)
 """
 
 """
-Width and Height for Transformed Image:
-500x500 is the dimension for the
-geometrical transformed image
+Width and Height for Transformed Image
 """
 
-WIDTH, HEIGHT = 500,500
+WIDTH, HEIGHT = 300,500
 
 
 def main():
@@ -76,7 +74,7 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # --- Input Image Paths --- #
-    input_image_path = "input/input_images/input_image1.png"
+    input_image_path = "input/input_images/input_image7.png"
 
     # --- Input Video Paths --- #
     input_video_path = "input/input_videos/input_video6.mp4"
