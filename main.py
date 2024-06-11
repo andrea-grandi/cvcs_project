@@ -58,7 +58,7 @@ distance from specific lines (baseline, sideline)
 Width and Height for Transformed Image
 """
 
-WIDTH, HEIGHT = 300,500
+WIDTH, HEIGHT = 350,500
 
 
 def main():
@@ -100,7 +100,7 @@ def main():
     # --- Apply Geometry Trasformations --- #
     src_points = court_line_detector.get_court_corners(court_keypoints)
     dst_points = np.array([(0,0), (WIDTH, 0), (0, HEIGHT), (WIDTH, HEIGHT)], dtype=np.float32)
-    geometric_transform = GeometricalTransformations(src_points, dst_points)
+    geometric_transform = GeometricalTransformations(WIDTH, HEIGHT, src_points, dst_points)
     transformed_image = geometric_transform.transform_image(court_keypoints_img)
     cropped_transformed_image = geometric_transform.crop_image(transformed_image)
 
