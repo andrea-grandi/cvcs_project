@@ -2,6 +2,12 @@ import cv2
 import numpy as np
 from court_reference import CourtReference
 
+"""
+Reference:
+TrackNet: A Deep Learning Network for Tracking High-speed and Tiny Objects in Sports Applications
+Yu-Chuan Huang I-No Liao Ching-Hsuan Chen Tsı`-Uı Ik Wen-Chih Peng Department of Computer Science, 
+College of Computer Science National Chiao Tung University 1001 University Road, Hsinchu City 30010, Taiwan
+"""
 
 def get_court_img():
     court_reference = CourtReference()
