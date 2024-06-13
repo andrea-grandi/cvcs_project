@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import torch
 import pickle
+import os
+import random
 from tracknet import TrackerNet
 from court_line_detector import CourtLineDetector
 from geometrical_transformations import GeometricalTransformations
@@ -63,7 +65,6 @@ WIDTH, HEIGHT = 350,500
 
 
 def main():
-
     # --- Models Paths --- #
     yolo_player_model_path = "models/yolo_player_model.pt"
     yolo_ball_model_path = "models/yolo_ball_model.pt"
@@ -74,20 +75,35 @@ def main():
     # --- Device --- #
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+    # --- Random Choice of Input Image and Video --- #
+    image_number = random.randint(1,24)
+    video_number = random.randint(1,6)
+
     # --- Input Image Paths --- #
-    input_image_path = "input/input_images/input_image7.png"
+    input_image_path = f"input/input_images/input_image{image_number}.png"
 
     # --- Input Video Paths --- #
-    input_video_path = "input/input_videos/input_video6.mp4"
+    input_video_path = f"input/input_videos/input_video{video_number}.mp4"
 
     # --- Output Image Paths --- #
-    output_keypoints_image_path = "output/output_images/output_keypoints_image.png"
-    output_transformed_image_path = "output/output_images/output_transformed_image.png"
-    output_detection_image_path = "output/output_images/output_detection_image.png"
-    output_court_visualizer_image_path = "output/output_images/output_court_visualizer_image.png"
+    output_keypoints_image_path = f"output/output_images/output_image{image_number}"
+    os.makedirs(output_keypoints_image_path, exist_ok=True)
+    output_keypoints_image_path = os.path.join(output_keypoints_image_path, "output_keypoints_image.png")
+
+    output_transformed_image_path = f"output/output_images/output_image{image_number}"
+    os.makedirs(output_transformed_image_path, exist_ok=True)
+    output_transformed_image_path = os.path.join(output_transformed_image_path, "output_transformed_image.png")
+
+    output_detection_image_path = f"output/output_images/output_image{image_number}"
+    os.makedirs(output_detection_image_path, exist_ok=True)
+    output_detection_image_path = os.path.join(output_detection_image_path, "output_detection_image.png")
+
+    output_court_visualizer_image_path = f"output/output_images/output_image{image_number}"
+    os.makedirs(output_court_visualizer_image_path, exist_ok=True)
+    output_court_visualizer_image_path = os.path.join(output_court_visualizer_image_path, "output_court_visualizer_image.png")
 
     # --- Output Video Paths --- #
-    output_video_path = "output/output_videos/output_video.mp4"
+    output_video_path = f"output/output_videos/output_video{video_number}.mp4"
 
     # --- Stubs Path --- #
     stub_player_path = "analysis/stubs/player_detections.pkl"
