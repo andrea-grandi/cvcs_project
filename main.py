@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import torch
+import pickle
 from tracknet import TrackerNet
 from court_line_detector import CourtLineDetector
 from geometrical_transformations import GeometricalTransformations
@@ -88,6 +89,10 @@ def main():
     # --- Output Video Paths --- #
     output_video_path = "output/output_videos/output_video.mp4"
 
+    # --- Stubs Path --- #
+    stub_player_path = "analysis/stubs/player_detections.pkl"
+    stub_ball_path = "analysis/stubs/ball_detections.pkl"
+
     # --- Info --- #
     print("Input Image Path: " + input_image_path)
     print("Input Video Path: " + input_video_path)
@@ -138,6 +143,9 @@ def main():
         print('ball detection')
         ball_detector = TrackingBallDetector(ball_track_model_path, device)
         ball_track = ball_detector.infer_model(frames)
+        # Save the detections in the stubs folder
+        with open(stub_ball_path, 'wb') as f:
+            pickle.dump(player_detections, f)
 
         print('court detection')
         court_detector = TrackingCourtDetectorNet(court_model_path, device)
@@ -146,6 +154,9 @@ def main():
         print('person detection')
         person_detector = TrackingPersonDetector(device)
         persons_top, persons_bottom = person_detector.track_players(frames, homography_matrices, filter_players=False)
+        # Save the detections in the stubs folder
+        with open(stub_player_path, 'wb') as f:
+            pickle.dump(player_detections, f)
 
         # bounce detection
         bounce_detector = TrackingBounceDetector(bounce_tracking_model_path)
@@ -153,7 +164,7 @@ def main():
         y_ball = [x[1] for x in ball_track]
         bounces = bounce_detector.predict(x_ball, y_ball)
 
-        # track
+        # track (drow all players bounding boxes and ball trajectory)
         imgs_res = tracking(frames, scenes, bounces, ball_track, homography_matrices, kps_court, persons_top, persons_bottom, draw_trace=True)
 
         # --- Save Video --- #
