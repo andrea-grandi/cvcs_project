@@ -4,6 +4,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.spatial import distance
 
+
 class TrackingBounceDetector:
     def __init__(self, path_model=None):
         self.model = ctb.CatBoostRegressor()
@@ -94,5 +95,4 @@ class TrackingBounceDetector:
             elif preds[ind_bounce[i]] > preds[ind_bounce[i-1]]:
                 ind_bounce_filtered[-1] = ind_bounce[i]
         return ind_bounce_filtered
-
-
+    

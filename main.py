@@ -21,6 +21,7 @@ from ball_detector import BallDetector
 from court_visualizer import CourtVisualizer
 from court_reference import CourtReference
 from tracking import TrackingBallDetector, TrackingCourtDetectorNet, TrackingPersonDetector, TrackingBounceDetector, tracking
+from analysis import Analysis
 
 """
 TO-DO: 
@@ -152,7 +153,7 @@ def main():
     #court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
 
     # --- Tracking --- #
-    if device == 'cuda':
+    if device == 'cpu':
         frames, fps = read_video(input_video_path) 
         scenes = scene_detect(input_video_path)
         
@@ -191,6 +192,11 @@ def main():
     save_image(output_transformed_image_path, cropped_transformed_image)
     save_image(output_keypoints_image_path, court_keypoints_img)
     save_image(output_court_visualizer_image_path, court_visualizer_image)
+
+    # --- Analysis --- #
+    analysis = Analysis(bounce_detector)
+    bounce_df = analysis.analyze_bounces_and_trajectories(x_ball, y_ball)
+    print(bounce_df)
 
 
 if __name__ == "__main__":
