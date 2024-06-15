@@ -78,7 +78,7 @@ def main():
 
     # --- Random Choice of Input Image and Video --- #
     image_number = random.randint(1,24)
-    video_number = random.randint(1,6)
+    video_number = random.randint(1,1)
 
     # --- Input Image Paths --- #
     input_image_path = f"input/input_images/input_image{image_number}.png"
@@ -153,7 +153,7 @@ def main():
     #court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
 
     # --- Tracking --- #
-    if device == 'cuda':
+    if device == 'cpu':
         frames, fps = read_video(input_video_path) 
         scenes = scene_detect(input_video_path)
         
@@ -187,16 +187,15 @@ def main():
         # --- Save Video --- #
         write_video(imgs_res, fps, output_video_path)
 
+        # --- Analysis --- #
+        analysis = Analysis(bounce_detector)
+        bounce_df = analysis.analyze_bounces_and_trajectories(x_ball, y_ball)
+
     # --- Save Images --- #
     save_image(output_detection_image_path, detections_output_image)
     save_image(output_transformed_image_path, cropped_transformed_image)
     save_image(output_keypoints_image_path, court_keypoints_img)
     save_image(output_court_visualizer_image_path, court_visualizer_image)
-
-    # --- Analysis --- #
-    analysis = Analysis(bounce_detector)
-    bounce_df = analysis.analyze_bounces_and_trajectories(x_ball, y_ball)
-    #print(bounce_df)
 
 
 if __name__ == "__main__":
