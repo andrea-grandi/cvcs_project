@@ -153,7 +153,7 @@ def main():
     #court_visualizer_image = court_visualizer.draw_points_ball_on_mini_court(court_visualizer_image, ball_court_visualizer_detections)
 
     # --- Tracking --- #
-    if device == 'cpu':
+    if device == 'cuda':
         frames, fps = read_video(input_video_path) 
         scenes = scene_detect(input_video_path)
         
