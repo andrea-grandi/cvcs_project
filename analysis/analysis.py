@@ -1,4 +1,3 @@
-from tracking import TrackingBounceDetector
 import cv2
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -8,6 +7,10 @@ from utils import save_image
 
 class Analysis():
   def __init__(self, detector):
+
+    """
+    The detector is TrackingBounceDetector 
+    """
     self.detector = detector
 
   def analyze_bounces_and_trajectories(self, x_coords, y_coords):
@@ -15,8 +18,6 @@ class Analysis():
     
     bounce_positions = [(x_coords[frame], y_coords[frame]) for frame in bounce_frames]
     bounce_df = pd.DataFrame(bounce_positions, columns=['x-coordinate', 'y-coordinate'])
-
-    # I want to save the analysis image 
  
     plt.figure(figsize=(12, 6))
     plt.plot(x_coords, y_coords, label='Ball Trajectory')

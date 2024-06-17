@@ -78,7 +78,7 @@ def main():
 
     # --- Random Choice of Input Image and Video --- #
     image_number = random.randint(1,24)
-    video_number = random.randint(1,1)
+    video_number = random.randint(1,6)
 
     # --- Input Image Paths --- #
     input_image_path = f"input/input_images/input_image{image_number}.png"
