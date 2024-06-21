@@ -8,6 +8,7 @@ class ConvBlock(nn.Module):
         self.block = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, stride=stride, padding=pad, bias=bias),
             nn.ReLU(),
+            #nn.SiLU(),
             nn.BatchNorm2d(out_channels)
         )
 
