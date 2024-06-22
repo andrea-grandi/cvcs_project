@@ -182,7 +182,6 @@ class CourtVisualizer():
 
         return  mini_court_player_position
 
-    # NEEDS TO BE IMPROVED
     def convert_bounding_boxes_to_mini_court_coordinates(self, player_boxes, ball_boxes, original_court_key_points):
         player_heights = {
             1: constants.PLAYER_1_HEIGHT_METERS,

@@ -67,7 +67,7 @@ WIDTH, HEIGHT = 350,500
 
 def main():
     # --- Models Paths --- #
-    yolo_player_model_path = "models/yolo_player_model.pt"
+    yolo_player_model_path = "models/yolo_player_model_test.pt"
     yolo_ball_model_path = "models/yolo_ball_model.pt"
     court_model_path = "models/court_model.pt"
     ball_track_model_path = "models/ball_tracking_model.pt"
