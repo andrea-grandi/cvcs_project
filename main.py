@@ -58,11 +58,7 @@ distance from specific lines (baseline, sideline)
     Player B: (X: 11m, Y: 0.5m from the right sideline)"
 """
 
-"""
-Width and Height for Transformed Image
-"""
-
-WIDTH, HEIGHT = 350,500
+#WIDTH, HEIGHT = 350,500
 
 
 def main():
@@ -121,11 +117,17 @@ def main():
 
     # --- Apply Geometry Trasformations --- #
     src_points = court_line_detector.get_court_corners(court_keypoints)
-    dst_points = np.array([(0,0), (WIDTH, 0), (0, HEIGHT), (WIDTH, HEIGHT)], dtype=np.float32)
-    geometric_transform = GeometricalTransformations(WIDTH, HEIGHT, src_points, dst_points)
+    print(src_points)
+    dst_points = np.array([(410,175), (877,175), (200,571), (1070,571)], dtype=np.float32)
+    #dst_points = np.array([(0,0), (WIDTH, 0), (0, HEIGHT), (WIDTH, HEIGHT)], dtype=np.float32)
+    geometric_transform = GeometricalTransformations(1280, 720, src_points, dst_points)
     transformed_image = geometric_transform.transform_image(court_keypoints_img)
     cropped_transformed_image = geometric_transform.crop_image(transformed_image)
 
+    # TEST
+    save_image(output_transformed_image_path, cropped_transformed_image)
+    input_image_path = f"output/output_images/output_image{image_number}/output_transformed_image.png"
+    
     # --- Players Detection --- #
     player_detector = PlayerDetector(yolo_player_model_path)
     player_detections = player_detector.detect(input_image_path, img=None)
