@@ -1,7 +1,7 @@
 import torch
 import cv2
 import numpy as np 
-from tracknet import TrackerNet
+from tracknet import TrackNet
 import torch.nn.functional as F
 from postprocess import postprocess, refine_kps
 
@@ -10,7 +10,7 @@ OUTPUT_HEIGHT = 360
 
 class CourtLineDetector:
     def __init__(self, model_path):
-        self.model = TrackerNet(out_channels=15)
+        self.model = TrackNet(out_channels=15)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model = self.model.to(self.device)
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))

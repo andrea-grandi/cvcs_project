@@ -14,7 +14,7 @@ class ConvBlock(nn.Module):
     def forward(self, x):
         return self.block(x)
 
-class TrackerNet(nn.Module):
+class TrackNet(nn.Module):
     def __init__(self, input_channels=3, out_channels=14):
         super().__init__()
         self.out_channels = out_channels

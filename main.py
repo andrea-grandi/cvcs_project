@@ -4,7 +4,7 @@ import torch
 import pickle
 import os
 import random
-from tracknet import TrackerNet
+from tracknet import TrackNet
 from court_line_detector import CourtLineDetector
 from geometrical_transformations import GeometricalTransformations
 from utils import (read_video, 
@@ -117,7 +117,6 @@ def main():
 
     # --- Apply Geometry Trasformations --- #
     src_points = court_line_detector.get_court_corners(court_keypoints)
-    print(src_points)
     dst_points = np.array([(410,175), (877,175), (200,571), (1070,571)], dtype=np.float32)
     #dst_points = np.array([(0,0), (WIDTH, 0), (0, HEIGHT), (WIDTH, HEIGHT)], dtype=np.float32)
     geometric_transform = GeometricalTransformations(1280, 720, src_points, dst_points)

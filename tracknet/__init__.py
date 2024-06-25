@@ -1,1 +1,1 @@
-from .tracknet import TrackerNet
+from .tracknet import TrackNet
