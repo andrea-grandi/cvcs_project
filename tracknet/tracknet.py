@@ -103,44 +103,56 @@ class ConvBlock(nn.Module):
     def forward(self, x):
         return self.block(x)
 
-class AttentionBlock(nn.Module):
-    def __init__(self, in_channels, reduction=16):
-        super(AttentionBlock, self).__init__()
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(
-            nn.Linear(in_channels, in_channels // reduction, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Linear(in_channels // reduction, in_channels, bias=False),
-            nn.Sigmoid()
-        )
+class ResidualBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, downsample=None):
+        super().__init__()
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.downsample = downsample
 
     def forward(self, x):
-        b, c, _, _ = x.size()
-        y = self.avg_pool(x).view(b, c)
-        y = self.fc(y).view(b, c, 1, 1)
-        return x * y.expand_as(x)
+        identity = x
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        if self.downsample is not None:
+            identity = self.downsample(x)
+
+        out += identity
+        out = self.relu(out)
+
+        return out
 
 class TrackNet(nn.Module):
-    def __init__(self, out_channels=14):
+    def __init__(self, input_channels=3, out_channels=14):
         super().__init__()
         self.out_channels = out_channels
+        self.input_channels = input_channels
 
-        self.conv1 = ConvBlock(in_channels=3, out_channels=64)
+        self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=64)
         self.conv2 = ConvBlock(in_channels=64, out_channels=64)
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv3 = ConvBlock(in_channels=64, out_channels=128)
-        self.conv4 = ConvBlock(in_channels=128, out_channels=128)
-        self.se1 = AttentionBlock(in_channels=128)
+        self.res1 = ResidualBlock(in_channels=64, out_channels=128, downsample=nn.Sequential(
+            nn.Conv2d(64, 128, kernel_size=1, stride=1, bias=False),
+            nn.BatchNorm2d(128)
+        ))
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv5 = ConvBlock(in_channels=128, out_channels=256)
-        self.conv6 = ConvBlock(in_channels=256, out_channels=256)
-        self.conv7 = ConvBlock(in_channels=256, out_channels=256)
-        self.se2 = AttentionBlock(in_channels=256)
+        self.res2 = ResidualBlock(in_channels=128, out_channels=256, downsample=nn.Sequential(
+            nn.Conv2d(128, 256, kernel_size=1, stride=1, bias=False),
+            nn.BatchNorm2d(256)
+        ))
         self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv8 = ConvBlock(in_channels=256, out_channels=512)
-        self.conv9 = ConvBlock(in_channels=512, out_channels=512)
-        self.conv10 = ConvBlock(in_channels=512, out_channels=512)
-        self.se3 = AttentionBlock(in_channels=512)
+        self.res3 = ResidualBlock(in_channels=256, out_channels=512, downsample=nn.Sequential(
+            nn.Conv2d(256, 512, kernel_size=1, stride=1, bias=False),
+            nn.BatchNorm2d(512)
+        ))
+        
         self.ups1 = nn.Upsample(scale_factor=2)
         self.conv11 = ConvBlock(in_channels=512, out_channels=256)
         self.conv12 = ConvBlock(in_channels=256, out_channels=256)
@@ -159,19 +171,11 @@ class TrackNet(nn.Module):
         x = self.conv1(x)
         x = self.conv2(x)    
         x = self.pool1(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.se1(x)
+        x = self.res1(x)
         x = self.pool2(x)
-        x = self.conv5(x)
-        x = self.conv6(x)
-        x = self.conv7(x)
-        x = self.se2(x)
+        x = self.res2(x)
         x = self.pool3(x)
-        x = self.conv8(x)
-        x = self.conv9(x)
-        x = self.conv10(x)
-        x = self.se3(x)
+        x = self.res3(x)
         x = self.ups1(x)
         x = self.conv11(x)
         x = self.conv12(x)
@@ -195,7 +199,6 @@ class TrackNet(nn.Module):
             elif isinstance(module, nn.BatchNorm2d):
                 nn.init.constant_(module.weight, 1)
                 nn.init.constant_(module.bias, 0)
-                
-    
+
 """
     
