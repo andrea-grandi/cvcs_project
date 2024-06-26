@@ -65,7 +65,8 @@ def main():
     # --- Models Paths --- #
     yolo_player_model_path = "models/yolo_player_model_test.pt"
     yolo_ball_model_path = "models/yolo_ball_model.pt"
-    court_model_path = "models/court_model.pt"
+    #court_model_path = "models/court_model.pt"
+    court_model_path = "models/model_best.pt"
     ball_track_model_path = "models/ball_tracking_model.pt"
     bounce_tracking_model_path = "models/bounce_tracking_model.cbm"
 

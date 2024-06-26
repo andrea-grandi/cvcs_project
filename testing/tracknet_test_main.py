@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_epochs', type=int, default=20, help='total training epochs')
     parser.add_argument('--lr', type=float, default=1e-5, help='learning rate')
     parser.add_argument('--val_intervals', type=int, default=5, help='number of epochs to run validation')
-    parser.add_argument('--steps_per_epoch', type=int, default=1000, help='number of steps per one epoch')
+    parser.add_argument('--steps_per_epoch', type=int, default=100, help='number of steps per one epoch')
     args = parser.parse_args()
     
     train_dataset = courtDataset('train')
@@ -50,8 +50,8 @@ if __name__ == '__main__':
     model_last_path = os.path.join(exps_path, 'model_last.pt')
     model_best_path = os.path.join(exps_path, 'model_best.pt')
 
-    criterion = nn.CrossEntropyLoss()
-    #criterion = nn.MSELoss()
+    #criterion = nn.CrossEntropyLoss()
+    criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), args.lr, betas=(0.9, 0.999), weight_decay=0)
 
     val_best_accuracy = 0
