@@ -66,6 +66,7 @@ def main():
     yolo_player_model_path = "models/yolo_player_model_test.pt"
     yolo_ball_model_path = "models/yolo_ball_model.pt"
     court_model_path = "models/court_model.pt"
+    #court_model_path = "models/model_last.pt"
     ball_track_model_path = "models/ball_tracking_model.pt"
     bounce_tracking_model_path = "models/bounce_tracking_model.cbm"
 
@@ -73,7 +74,7 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # --- Random Choice of Input Image and Video --- #
-    image_number = random.randint(1,24)
+    image_number = random.randint(6,6)
     video_number = random.randint(1,6)
 
     # --- Input Image Paths --- #
