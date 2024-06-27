@@ -5,7 +5,7 @@ import pickle
 import os
 import random
 from tracknet import TrackNet
-from court_line_detector import CourtLineDetector
+from court_line_detector import CourtLineDetector, CourtLineDetectorResNet
 from geometrical_transformations import GeometricalTransformations
 from utils import (read_video, 
                    save_video,
@@ -66,7 +66,7 @@ def main():
     yolo_player_model_path = "models/yolo_player_model_test.pt"
     yolo_ball_model_path = "models/yolo_ball_model.pt"
     court_model_path = "models/court_model.pt"
-    #court_model_path = "models/model_tennis_court_det.pt"
+    court_model_resnet_path = "models/keypoints_model.pth"
     ball_track_model_path = "models/ball_tracking_model.pt"
     bounce_tracking_model_path = "models/bounce_tracking_model.cbm"
 
@@ -87,6 +87,10 @@ def main():
     output_keypoints_image_path = f"output/output_images/output_image{image_number}"
     os.makedirs(output_keypoints_image_path, exist_ok=True)
     output_keypoints_image_path = os.path.join(output_keypoints_image_path, "output_keypoints_image.png")
+
+    output_keypoints_image_resnet = f"output/output_images/output_image{image_number}"
+    os.makedirs(output_keypoints_image_resnet, exist_ok=True)
+    output_keypoints_image_resnet = os.path.join(output_keypoints_image_resnet, "output_keypoints_image_resnet.png")
 
     output_transformed_image_path = f"output/output_images/output_image{image_number}"
     os.makedirs(output_transformed_image_path, exist_ok=True)
@@ -114,7 +118,13 @@ def main():
 
     # --- Court Line Detector --- #
     court_line_detector = CourtLineDetector(court_model_path)
-    court_keypoints_img, court_keypoints = court_line_detector.predict(input_image_path, output_keypoints_image_path, use_refine_kps=False)
+    court_keypoints_img, court_keypoints = court_line_detector.predict(input_image_path, output_keypoints_image_path)
+
+    # Keypoint with ResNet50
+    court_line_detector_resnet = CourtLineDetectorResNet(court_model_resnet_path)
+    court_keypoints_resnet = court_line_detector_resnet.predict(read_image(input_image_path))
+    court_keypoints_resnet_img  = court_line_detector_resnet.draw_keypoints(read_image(input_image_path), court_keypoints_resnet)
+    save_image(output_keypoints_image_resnet, court_keypoints_resnet_img)
 
     # --- Apply Geometry Trasformations --- #
     src_points = court_line_detector.get_court_corners(court_keypoints)

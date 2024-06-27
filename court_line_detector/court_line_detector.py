@@ -4,6 +4,9 @@ import numpy as np
 from tracknet import TrackNet
 import torch.nn.functional as F
 from postprocess import postprocess, refine_kps
+import torchvision.transforms as transforms
+from torchvision import models
+
 
 OUTPUT_WIDTH = 640
 OUTPUT_HEIGHT = 360
@@ -16,7 +19,7 @@ class CourtLineDetector:
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))
         self.model.eval()
         
-    def predict(self, input_path, output_path, use_refine_kps):
+    def predict(self, input_path, output_path, use_refine_kps=False):
         # --- Read Input Image --- #
         image = cv2.imread(input_path)
         image_resized = cv2.resize(image, (OUTPUT_WIDTH, OUTPUT_HEIGHT))
@@ -82,3 +85,5 @@ class CourtLineDetector:
         court_corners = np.array([top_left, top_right, bottom_left, bottom_right], dtype=np.float32)
         
         return court_corners
+    
+
