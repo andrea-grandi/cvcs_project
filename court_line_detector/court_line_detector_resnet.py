@@ -29,7 +29,6 @@ class CourtLineDetectorResNet:
         return keypoints
 
     def draw_keypoints(self, image, keypoints):
-        # Plot keypoints on the image
         for i in range(0, len(keypoints), 2):
             x = int(keypoints[i])
             y = int(keypoints[i+1])
@@ -37,9 +36,3 @@ class CourtLineDetectorResNet:
             cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
         return image
     
-    def draw_keypoints_on_video(self, video_frames, keypoints):
-        output_video_frames = []
-        for frame in video_frames:
-            frame = self.draw_keypoints(frame, keypoints)
-            output_video_frames.append(frame)
-        return output_video_frames

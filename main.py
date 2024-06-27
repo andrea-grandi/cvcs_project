@@ -120,7 +120,7 @@ def main():
     court_line_detector = CourtLineDetector(court_model_path)
     court_keypoints_img, court_keypoints = court_line_detector.predict(input_image_path, output_keypoints_image_path)
 
-    # Keypoint with ResNet50
+    # Keypoints with ResNet50
     court_line_detector_resnet = CourtLineDetectorResNet(court_model_resnet_path)
     court_keypoints_resnet = court_line_detector_resnet.predict(read_image(input_image_path))
     court_keypoints_resnet_img  = court_line_detector_resnet.draw_keypoints(read_image(input_image_path), court_keypoints_resnet)
@@ -134,7 +134,7 @@ def main():
     transformed_image = geometric_transform.transform_image(court_keypoints_img)
     cropped_transformed_image = geometric_transform.crop_image(transformed_image)
 
-    # TEST
+    # Preprocessing 
     save_image(output_transformed_image_path, cropped_transformed_image)
     input_image_path = f"output/output_images/output_image{image_number}/output_transformed_image.png"
     
