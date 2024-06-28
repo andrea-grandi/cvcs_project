@@ -3,11 +3,13 @@ import torchvision.transforms as transforms
 import cv2
 from torchvision import models
 import numpy as np
+from keypoints_extraction_resnet_modified import KeypointResNet50
 
 class CourtLineDetectorResNet:
     def __init__(self, model_path):
-        self.model = models.resnet50(pretrained=True)
-        self.model.fc = torch.nn.Linear(self.model.fc.in_features, 14*2) 
+        self.model = KeypointResNet50()
+        #self.model = models.resnet50(pretrained=True)
+        #self.model.fc = torch.nn.Linear(self.model.fc.in_features, 14*2) 
         self.model.load_state_dict(torch.load(model_path, map_location='cpu'))
         self.transform = transforms.Compose([
             transforms.ToPILImage(),

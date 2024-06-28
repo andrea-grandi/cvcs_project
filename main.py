@@ -66,7 +66,7 @@ def main():
     yolo_player_model_path = "models/yolo_player_model_test.pt"
     yolo_ball_model_path = "models/yolo_ball_model.pt"
     court_model_path = "models/court_model.pt"
-    court_model_resnet_path = "models/keypoints_model.pth"
+    court_model_resnet_path = "models/keypoints_model.pt"
     ball_track_model_path = "models/ball_tracking_model.pt"
     bounce_tracking_model_path = "models/bounce_tracking_model.cbm"
 
@@ -74,7 +74,7 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # --- Random Choice of Input Image and Video --- #
-    image_number = random.randint(1,24)
+    image_number = random.randint(1,25)
     video_number = random.randint(1,6)
 
     # --- Input Image Paths --- #
@@ -123,6 +123,7 @@ def main():
     # Keypoints with ResNet50
     court_line_detector_resnet = CourtLineDetectorResNet(court_model_resnet_path)
     court_keypoints_resnet = court_line_detector_resnet.predict(read_image(input_image_path))
+    print(court_keypoints_resnet)
     court_keypoints_resnet_img  = court_line_detector_resnet.draw_keypoints(read_image(input_image_path), court_keypoints_resnet)
     save_image(output_keypoints_image_resnet, court_keypoints_resnet_img)
 
