@@ -1,87 +1,151 @@
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, precision_recall_curve, roc_curve, auc, f1_score, precision_score, recall_score
 import torch
-from ultralytics import YOLO
-from PIL import Image
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+import json
+import cv2
+import numpy as np
+from torchvision import transforms, models
+from torch.utils.data import Dataset
+import os
+import matplotlib.pyplot as plt
 
-
-test_images_path = 'images/' 
-output_images_path = 'results/images/'
-
-print(test_images_path)
-
-os.makedirs(output_images_path, exist_ok=True)
-
-model = YOLO('../models/yolo_player_model.pt')
-
-def load_images(test_images_path):
-    images = []
-    for filename in os.listdir(test_images_path):
-        if filename.endswith(".jpg") or filename.endswith(".png"):
-            img_path = os.path.join(test_images_path, filename)
-            img = Image.open(img_path)
-            images.append(img)
-    return images
-
-def predict(model, images):
-    predictions = []
-    for img in images:
-        result = model.predict(img)
-        predictions.append(result)
-    return predictions
-
-def calculate_metrics(true_labels, predictions):
-    y_true = np.concatenate(true_labels)
-    y_pred = np.concatenate(predictions)
+class KeypointsDataset(Dataset):
+    def __init__(self, img_dir, data_file):
+        self.img_dir = img_dir
+        with open(data_file, "r") as f:
+            self.data = json.load(f)
+        
+        self.transforms = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
     
-    # Confusion Matrix
-    conf_matrix = confusion_matrix(y_true, y_pred)
+    def __len__(self):
+        return len(self.data)
     
-    # Precision, Recall, F1 Score
-    precision = precision_score(y_true, y_pred, average='weighted')
-    recall = recall_score(y_true, y_pred, average='weighted')
-    f1 = f1_score(y_true, y_pred, average='weighted')
-    
-    # Precision-Recall Curve
-    precision_values, recall_values, _ = precision_recall_curve(y_true, y_pred)
-    
-    # ROC Curve
-    fpr, tpr, _ = roc_curve(y_true, y_pred)
-    roc_auc = auc(fpr, tpr)
-    
-    return conf_matrix, precision, recall, f1, precision_values, recall_values, fpr, tpr, roc_auc
+    def __getitem__(self, idx):
+        item = self.data[idx]
+        img = cv2.imread(f"{self.img_dir}/{item['id']}.png")
+        h, w = img.shape[:2]
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = self.transforms(img)
+        kps = np.array(item['kps']).flatten()
+        kps = kps.astype(np.float32)
+        kps[::2] *= 224.0 / w
+        kps[1::2] *= 224.0 / h
+        return img, kps
 
-def save_curves(precision_values, recall_values, fpr, tpr, roc_auc, output_images_path):
-    # Precision-Recall Curve
-    plt.figure()
-    plt.plot(recall_values, precision_values, marker='.')
-    plt.title('Precision-Recall Curve')
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.savefig(os.path.join(output_images_path, 'precision_recall_curve.png'))
-    plt.close()
+class ChannelAttention(nn.Module):
+    def __init__(self, in_planes, ratio=16):
+        super(ChannelAttention, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+        self.fc1 = nn.Conv2d(in_planes, in_planes // ratio, 1, bias=False)
+        self.relu1 = nn.ReLU()
+        self.fc2 = nn.Conv2d(in_planes // ratio, in_planes, 1, bias=False)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        avg_out = self.fc2(self.relu1(self.fc1(self.avg_pool(x))))
+        max_out = self.fc2(self.relu1(self.fc1(self.max_pool(x))))
+        out = avg_out + max_out
+        return self.sigmoid(out)
+
+class SpatialAttention(nn.Module):
+    def __init__(self):
+        super(SpatialAttention, self).__init__()
+        self.conv1 = nn.Conv2d(2, 1, kernel_size=7, padding=3)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        avg_out = torch.mean(x, dim=1, keepdim=True)
+        max_out, _ = torch.max(x, dim=1, keepdim=True)
+        x = torch.cat([avg_out, max_out], dim=1)
+        x = self.conv1(x)
+        return self.sigmoid(x)
+
+class KeypointResNet50(nn.Module):
+    def __init__(self):
+        super(KeypointResNet50, self).__init__()
+        self.backbone = models.resnet50(pretrained=True)
+        self.backbone.fc = nn.Identity()
+        self.conv = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, padding=0, bias=False)
+        self.channel_attention = ChannelAttention(2048)
+        self.spatial_attention = SpatialAttention()
+        self.fc = nn.Linear(2048, 14 * 2)
+
+    def forward(self, x):
+        x = self.backbone(x)
+        x = x.unsqueeze(2).unsqueeze(3)
+        x = self.conv(x)
+        x = self.channel_attention(x) * x
+        x = self.spatial_attention(x) * x
+        x = nn.functional.adaptive_avg_pool2d(x, (1, 1))
+        x = torch.flatten(x, 1)
+        x = self.fc(x)
+        return x
+
+def evaluate(model, dataloader, device):
+    model.eval()
+    criterion = nn.MSELoss()
+    total_loss = 0
+    all_predictions = []
+    all_targets = []
     
-    # ROC Curve
-    plt.figure()
-    plt.plot(fpr, tpr, marker='.')
-    plt.title('ROC Curve')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.plot([0, 1], [0, 1], linestyle='--')
-    plt.savefig(os.path.join(output_images_path, 'roc_curve.png'))
-    plt.close()
+    with torch.no_grad():
+        for images, targets in dataloader:
+            images = images.to(device)
+            targets = targets.to(device)
+            
+            outputs = model(images)
+            loss = criterion(outputs, targets)
+            total_loss += loss.item()
+            
+            all_predictions.append(outputs.cpu().numpy())
+            all_targets.append(targets.cpu().numpy())
+    
+    avg_loss = total_loss / len(dataloader)
+    all_predictions = np.concatenate(all_predictions, axis=0)
+    all_targets = np.concatenate(all_targets, axis=0)
+    
+    return avg_loss, all_predictions, all_targets
 
-images, true_labels = load_images_and_annotations(test_images_path)
-predictions = predict(model, images)
-conf_matrix, precision, recall, f1, precision_values, recall_values, fpr, tpr, roc_auc = calculate_metrics(true_labels, predictions)
+def visualize_predictions(images, predictions, targets, idx=0):
+    img = images[idx].permute(1, 2, 0).cpu().numpy()
+    pred_kps = predictions[idx].reshape(-1, 2)
+    true_kps = targets[idx].reshape(-1, 2)
+    
+    plt.imshow(img)
+    plt.scatter(pred_kps[:, 0], pred_kps[:, 1], color='r', label='Predicted')
+    plt.scatter(true_kps[:, 0], true_kps[:, 1], color='g', label='Ground Truth')
+    plt.legend()
+    plt.show()
 
-print('Confusion Matrix:')
-print(conf_matrix)
-print(f'Precision: {precision:.4f}')
-print(f'Recall: {recall:.4f}')
-print(f'F1 Score: {f1:.4f}')
-print(f'ROC AUC: {roc_auc:.4f}')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = KeypointResNet50().to(device)
 
-save_curves(precision_values, recall_values, fpr, tpr, roc_auc, output_images_path)
+# Load the model checkpoint
+checkpoint_path = "../models/keypoints_model.pt"
+model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+
+# Create DataLoader for test dataset
+test_dataset = KeypointsDataset("/Users/andreagrandi/Desktop/computer_vision_and_cognitive_systems/datasets/data/images","/Users/andreagrandi/Desktop/computer_vision_and_cognitive_systems/datasets/data/data_train.json")
+test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
+
+# Evaluate the model
+test_loss, test_predictions, test_targets, test_images = evaluate(model, test_loader, device)
+
+print(f"Test Loss: {test_loss}")
+
+# Further analysis (optional)
+# Calculate MSE, MAE, visualize predictions vs. ground truth, etc.
+mse = np.mean((test_predictions - test_targets) ** 2)
+mae = np.mean(np.abs(test_predictions - test_targets))
+
+print(f"Test MSE: {mse}")
+print(f"Test MAE: {mae}")
+
+visualize_predictions(test_images, test_predictions, test_targets, idx=0)
