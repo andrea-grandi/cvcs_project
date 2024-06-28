@@ -5,6 +5,7 @@ from torchvision import models
 import numpy as np
 from keypoints_extraction_resnet_modified import KeypointResNet50
 
+
 class CourtLineDetectorResNet:
     def __init__(self, model_path):
         self.model = KeypointResNet50()
