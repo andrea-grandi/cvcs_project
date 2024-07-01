@@ -127,21 +127,17 @@ def visualize_predictions(images, predictions, targets, idx=0):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = KeypointResNet50().to(device)
 
-# Load the model checkpoint
+# Load the model
 checkpoint_path = "../models/keypoints_model.pt"
 model.load_state_dict(torch.load(checkpoint_path, map_location=device))
 
-# Create DataLoader for test dataset
 test_dataset = KeypointsDataset("/Users/andreagrandi/Desktop/computer_vision_and_cognitive_systems/datasets/data/images","/Users/andreagrandi/Desktop/computer_vision_and_cognitive_systems/datasets/data/data_train.json")
 test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
-# Evaluate the model
 test_loss, test_predictions, test_targets, test_images = evaluate(model, test_loader, device)
 
 print(f"Test Loss: {test_loss}")
 
-# Further analysis (optional)
-# Calculate MSE, MAE, visualize predictions vs. ground truth, etc.
 mse = np.mean((test_predictions - test_targets) ** 2)
 mae = np.mean(np.abs(test_predictions - test_targets))
 
