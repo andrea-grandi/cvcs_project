@@ -123,7 +123,6 @@ def main():
     # Keypoints with ResNet50
     court_line_detector_resnet = CourtLineDetectorResNet(court_model_resnet_path)
     court_keypoints_resnet = court_line_detector_resnet.predict(read_image(input_image_path))
-    court_keypoints_resnet_heatmap = court_line_detector_resnet.heatmap(read_image(input_image_path))
     court_keypoints_resnet_img  = court_line_detector_resnet.draw_keypoints(read_image(input_image_path), court_keypoints_resnet)
     save_image(output_keypoints_image_resnet, court_keypoints_resnet_img)
 
@@ -143,7 +142,6 @@ def main():
     player_detector = PlayerDetector(yolo_player_model_path)
     player_detections = player_detector.detect(input_image_path, img=None)
 
-    # Not needed anymore (couse i have trained YOLOv8 for player detection)
     # Dataset: https://universe.roboflow.com/deep-hbapi/tennis-yfcgx/dataset/1#
     # For reference .ipynb go to training/yolov8_training.ipynb
     # filtered_player_detections = player_detector.choose_and_filter_players(court_keypoints, player_detections)

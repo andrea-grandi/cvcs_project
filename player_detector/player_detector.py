@@ -32,40 +32,8 @@ class PlayerDetector:
                     detection['track_id'] = box.id.item()
                 
                 if player_id <= 2:
-                    # Class ID for Player
                     if class_id == 1:
                         player_detections.append(detection)
                         player_id+=1
 
         return player_detections
-    
-    # Not needed anymore
-    def choose_and_filter_players(self, court_keypoints, player_detections):
-
-        # Calculate the center of the court
-        court_center_x = np.mean([court_keypoints[i][0] for i in range(4)])
-        court_center_y = np.mean([court_keypoints[i][1] for i in range(4)])
-        court_center = (court_center_x, court_center_y)
-        
-        # Calculate distances from the center of the court to each pearson
-        player_distances = []
-        for detection in player_detections:
-            bbox_center = get_center_of_bbox(detection['bbox'])
-            distance = measure_distance(court_center, bbox_center)
-            player_distances.append((distance, detection))
-
-        # Sort players by distance to the court center
-        player_distances.sort(key=lambda x: x[0])
-
-        # Select the two closest players
-        filtered_player_detections = [player_distances[i][1] for i in range(min(4, len(player_distances)))]
-
-        # Select the two player with higher confidence sorted by ID
-        for i in range(4):
-            if i < 3 and filtered_player_detections[i]['confidence']<filtered_player_detections[i+1]['confidence']:
-                    tmp = filtered_player_detections[i]
-                    filtered_player_detections[i] = filtered_player_detections[i+1]
-                    filtered_player_detections[i+1] = tmp
-
-        # Return only the first and second detections
-        return filtered_player_detections[:2]
